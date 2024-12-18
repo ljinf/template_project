@@ -1,0 +1,223 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4541
+#
+# http://www.sequelpro.com/
+# https://github.com/sequelpro/sequelpro
+#
+# Host: 127.0.0.1 (MySQL 5.7.37)
+# Database: go_mall
+# Generation Time: 2024-07-18 09:34:18 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table commodities
+# ------------------------------------------------------------
+
+CREATE TABLE `commodities` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '商品表主键id',
+  `name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名',
+  `intro` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品简介',
+  `category_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '关联分类id',
+  `cover_img` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品封面图',
+  `images` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品细节图',
+  `detail_content` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品详情',
+  `original_price` int(11) NOT NULL DEFAULT '1' COMMENT '商品原价',
+  `selling_price` int(11) NOT NULL DEFAULT '1' COMMENT '商品售价',
+  `stock_num` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '商品库存数量',
+  `tag` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品标签',
+  `sell_status` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '商品上架状态 1-上架  2-下架',
+  `is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '删除 0-未删除 1-已删除',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_cate_id` (`category_id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='商品表';
+
+
+
+# Dump of table commodity_categories
+# ------------------------------------------------------------
+
+CREATE TABLE `commodity_categories` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '分类id',
+  `level` tinyint(4) NOT NULL DEFAULT '0' COMMENT '分类级别(1-一级分类 2-二级分类 3-三级分类)',
+  `parent_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '父分类id',
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分类名称',
+  `icon_img` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '分类的图标',
+  `rank` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序值(字段越大越靠前)',
+  `is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '删除标识字段(0-未删除 1-已删除)',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='商品分类表';
+
+
+
+# Dump of table demo_orders
+# ------------------------------------------------------------
+
+CREATE TABLE `demo_orders` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',
+  `bill_money` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '订单金额（分）',
+  `order_no` varchar(32) NOT NULL DEFAULT '' COMMENT '业务支付订单号',
+  `order_goods_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '订单对应的商品ID',
+  `state` tinyint(2) unsigned NOT NULL DEFAULT '1' COMMENT '1-待支付，2-支付成功，3-支付失败',
+  `paid_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '未支付时, 默认时间为1970-01-01',
+  `is_del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0-未删除 1-已删除',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表--搭建项目时演示使用';
+
+
+
+# Dump of table order_address
+# ------------------------------------------------------------
+
+CREATE TABLE `order_address` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单关联收货信息的id',
+  `order_id` bigint(20) unsigned NOT NULL COMMENT '订单id',
+  `user_name` varchar(30) NOT NULL DEFAULT '' COMMENT '收货人姓名',
+  `user_phone` varchar(11) NOT NULL DEFAULT '' COMMENT '收货人手机号',
+  `province_name` varchar(32) NOT NULL DEFAULT '' COMMENT '省',
+  `city_name` varchar(32) NOT NULL DEFAULT '' COMMENT '城',
+  `region_name` varchar(32) NOT NULL DEFAULT '' COMMENT '区',
+  `detail_address` varchar(64) NOT NULL DEFAULT '' COMMENT '收件详细地址(街道/楼宇/单元)',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单收货信息表';
+
+
+
+# Dump of table order_items
+# ------------------------------------------------------------
+
+CREATE TABLE `order_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '订单关联购物项主键id',
+  `order_id` bigint(20) unsigned NOT NULL COMMENT '订单主键id',
+  `commodity_id` bigint(20) unsigned NOT NULL COMMENT '关联的商品id',
+  `commodity_name` varchar(200) NOT NULL DEFAULT '' COMMENT '下单时商品的名称(订单快照)',
+  `commodity_img` varchar(200) NOT NULL DEFAULT '' COMMENT '下单时商品的主图(订单快照)',
+  `commodity_selling_price` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '下单时商品的价格(订单快照)',
+  `commodity_num` int(10) unsigned NOT NULL DEFAULT '1' COMMENT '数量(订单快照)',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_order_id` (`order_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单快照--商品详情表';
+
+
+
+# Dump of table orders
+# ------------------------------------------------------------
+
+CREATE TABLE `orders` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `order_no` varchar(32) NOT NULL DEFAULT '' COMMENT '业务支付订单号',
+  `pay_trans_id` varchar(100) NOT NULL DEFAULT '' COMMENT '支付成功后，回填的支付平台交易ID',
+  `pay_type` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '支付类型 0-未确定 1-微信支付 2-支付宝',
+  `user_id` bigint(20) unsigned NOT NULL COMMENT '用户ID',
+  `bill_money` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '订单金额（分）',
+  `pay_money` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '支付金额（分）',
+  `pay_state` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '0-未发起支付, 1-待支付，2-支付成功，3-支付失败',
+  `order_status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '订单状态: 0.已创建 1.待支付 2.已支付 3.配货完成 4.已发货 5.配送中 6.配送完成待客户确认 7. 已确认收货 8. 交易成功 9.用户手动关闭 10.超时未支付关闭 11.商家确认后关闭',
+  `paid_at` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '未支付时, 默认时间为1970-01-01',
+  `is_del` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0-未删除 1-已删除',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_order_no` (`order_no`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
+
+
+
+# Dump of table shopping_cart_items
+# ------------------------------------------------------------
+
+CREATE TABLE `shopping_cart_items` (
+  `cart_item_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '购物项主键id',
+  `user_id` bigint(20) unsigned NOT NULL COMMENT '用户主键id',
+  `commodity_id` bigint(20) unsigned  NOT NULL COMMENT '关联商品id',
+  `commodity_num` int(11) NOT NULL DEFAULT '1' COMMENT '数量',
+  `is_del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '删除(0-未删除 1-已删除)',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`cart_item_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='购物车明细表';
+
+
+
+# Dump of table user_address
+# ------------------------------------------------------------
+
+CREATE TABLE `user_address` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL COMMENT '用户主键id',
+  `user_name` varchar(30) NOT NULL COMMENT '收货人姓名',
+  `user_phone` varchar(11) NOT NULL COMMENT '收货人手机号',
+  `default` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否为默认收货信息 0-非默认 1-是默认',
+  `province_name` varchar(32) NOT NULL DEFAULT '' COMMENT '省',
+  `city_name` varchar(32) NOT NULL DEFAULT '' COMMENT '城',
+  `region_name` varchar(32) NOT NULL DEFAULT '' COMMENT '区/县',
+  `detail_address` varchar(64) NOT NULL DEFAULT '' COMMENT '收件详细地址(街道/楼宇/单元)',
+  `is_del` tinyint(4) NOT NULL DEFAULT '0' COMMENT '删除标识字段(0-未删除 1-已删除)',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户收货信息表';
+
+
+
+# Dump of table users
+# ------------------------------------------------------------
+
+CREATE TABLE `users` (
+  `id` bigint(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `nickname` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `login_name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '登录时使用的用户名',
+  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'bcrypt加密的登录密码',
+  `verified` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '验证状态 0-未验证 1-已验证',
+  `avatar` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户头像',
+  `slogan` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '个性签名',
+  `is_del` tinyint(4) unsigned NOT NULL DEFAULT '0' COMMENT '删除状态 0-未删除 1-已删除',
+  `is_blocked` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '禁用状态 0-正常 1-已禁用',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_idx_login_name` (`login_name`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_updated_at` (`updated_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
